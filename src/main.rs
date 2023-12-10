@@ -1,26 +1,42 @@
+use std::{io, cmp::Ordering};
+use rand::Rng;
+use colored::*;
+
 fn main() {
-    // This is an example of a line comment.
+    println!("Guess the number!");
 
-    /* 
-     * Block comments which go to the closing delimiter.
-     */
+    let secret_number = rand::thread_rng().gen_range(1..101);
 
-    println!("Hello World!");
-    
-    print!("I'm a Rustacean!");
-    println!("This should come in the same line.");
+    println!("Secret Number is: {}", secret_number);
 
-    let pushp = "Pushp";
-    let aashna = "Aashna";
-    println!("Hello {pushp}");
-    println!("Hello {}", pushp);
-    // Positional argument
-    println!("{0}: Hi {1}, how are you?\n{1}: I am grand! Yourself?", pushp, aashna);
-    //Named argument
-    println!("{person1}: Hi {person2}, how are you?\n{person2}: I am grand! Yourself?", person1=pushp, person2=aashna);
+    println!("Please input your guess: ");
 
-    // Padding format
-    println!("Pi is roughly {pi:.precision$}", pi=3.141592, precision=3);
+    loop {
+        let mut guess = String::new();
 
-    eprintln!("This is an error message.");
+        io::stdin()
+            .read_line(&mut guess)
+            .expect("Failed to read line.");
+
+        // let guess: u16 = guess.trim().parse().expect("Could not parse user input");
+
+        let guess: u16 = match guess.trim().parse() {
+            Err(e) => {
+                eprintln!("{} {}", "Could not parse user input:".red(), e);
+                continue;
+            },
+            Ok(num) => num,
+        };
+
+        println!("You guessed: {}", guess);
+
+        match guess.cmp(&secret_number) {
+            Ordering::Less => println!("{}", "Too little".yellow()),
+            Ordering::Equal => {
+                println!("{}", "You guessed it right".green());
+                break;
+            },
+            Ordering::Greater => println!("{}", "Too big".yellow()),
+        }
+    }
 }
